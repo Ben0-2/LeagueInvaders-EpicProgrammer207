@@ -6,11 +6,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
     Timer timer;
+	JLabel label;
+   
 	final int MENU_STATE = 0;
 	final int GAME_STATE = 1;
 	final int END_STATE = 2;
@@ -19,8 +22,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	RocketShip rocketShip = new RocketShip(250, 700, 50, 50);
     ObjectManager objectManager = new ObjectManager();
 	public GamePanel() {
+	
+		label = new JLabel("SCORE: 0");
+		
+		label.setBounds(100, 100, 50, 50);
 		timer = new Timer(1000 / 60, this);
-		titleFont = new Font("Arial", Font.PLAIN, 48);
+		titleFont = new Font("Arial", Font.PLAIN, 36);
 	    objectManager.addObject(rocketShip);
 	}
 
@@ -64,9 +71,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 			if (currentState == MENU_STATE) {
 				currentState = GAME_STATE;
-			} else if (currentState == GAME_STATE) {
-				currentState = END_STATE;
-			} else if (currentState == END_STATE) {
+			} 
+			 else if (currentState == END_STATE) {
 				currentState = MENU_STATE;
 			}
 		}
@@ -97,10 +103,20 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	void updateGameState() {
 		objectManager.update();
 	    objectManager.manageEnemies();
+	    objectManager.checkCollision();
+		
+	    if(!rocketShip.isAlive){
+	    	System.out.println("Rrcketsherp is derd");
+	    	currentState = END_STATE;
+	        objectManager.reset();
+	        rocketShip = new RocketShip(250, 700, 50, 50);
+	        objectManager.addObject(rocketShip);
+	    }
+
 	}
 
 	void updateEndState() {
-
+		
 	}
 
 	void drawMenuState(Graphics g) {
@@ -113,12 +129,16 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
 	void drawGameState(Graphics g) {
 objectManager.draw(g);
+
+
 	}
 
 	void drawEndState(Graphics g) {
 		g.setColor(Color.BLACK);
 		// g.fillRect(0, 0, LeagueInvaders.width, LeagueInvaders.height);
 		g.setFont(titleFont);
-		g.drawString("Game Over!", 80, 400);
+		g.drawString("Game Over! " + "SCORE: " + Integer.toString(objectManager.getScore()), 80, 400);
+
+		repaint();
 	}
 }
