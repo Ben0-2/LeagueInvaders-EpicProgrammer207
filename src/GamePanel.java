@@ -5,7 +5,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -13,8 +16,10 @@ import javax.swing.Timer;
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
     Timer timer;
 	JLabel label;
-   
-	final int MENU_STATE = 0;
+	public static BufferedImage alienImg;
+	public static BufferedImage rocketImg;
+	public static BufferedImage bulletImg;
+    final int MENU_STATE = 0;
 	final int GAME_STATE = 1;
 	final int END_STATE = 2;
 	int currentState = MENU_STATE;
@@ -22,7 +27,16 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	RocketShip rocketShip = new RocketShip(250, 700, 50, 50);
     ObjectManager objectManager = new ObjectManager();
 	public GamePanel() {
-	
+		try {
+			alienImg = ImageIO.read(this.getClass().getResourceAsStream("alien.png"));
+			rocketImg = ImageIO.read(this.getClass().getResourceAsStream("rocket.png"));
+			bulletImg = ImageIO.read(this.getClass().getResourceAsStream("bullet.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		
+		}
+
 		label = new JLabel("SCORE: 0");
 		
 		label.setBounds(100, 100, 50, 50);
@@ -97,7 +111,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	}
 
 	void updateMenuState() {
-
+		objectManager.reset();
+		objectManager.setScore(0);
+		 rocketShip = new RocketShip(250, 700, 50, 50);
+	        objectManager.addObject(rocketShip);
 	}
 
 	void updateGameState() {
@@ -108,9 +125,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	    if(!rocketShip.isAlive){
 	    	System.out.println("Rrcketsherp is derd");
 	    	currentState = END_STATE;
-	        objectManager.reset();
-	        rocketShip = new RocketShip(250, 700, 50, 50);
-	        objectManager.addObject(rocketShip);
+	        
+	        
+	       
+	        
 	    }
 
 	}
@@ -120,25 +138,31 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	}
 
 	void drawMenuState(Graphics g) {
+		g.setColor(Color.BLUE);
+		g.fillRect(0,0,LeagueInvaders.width,LeagueInvaders.height);
 		g.setColor(Color.RED);
 		// g.fillRect(0, 0, LeagueInvaders.width, LeagueInvaders.height);
 		g.setFont(titleFont);
+		
 		g.drawString("League Invaders", 100, 400);
 
 	}
 
 	void drawGameState(Graphics g) {
+g.setColor(Color.BLACK);
+g.fillRect(0,0,LeagueInvaders.width,LeagueInvaders.height);
 objectManager.draw(g);
 
 
 	}
 
 	void drawEndState(Graphics g) {
+	g.setColor(Color.white);
 		g.setColor(Color.BLACK);
 		// g.fillRect(0, 0, LeagueInvaders.width, LeagueInvaders.height);
 		g.setFont(titleFont);
 		g.drawString("Game Over! " + "SCORE: " + Integer.toString(objectManager.getScore()), 80, 400);
-
+		
 		repaint();
 	}
 }

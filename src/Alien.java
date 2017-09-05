@@ -10,14 +10,12 @@ public class Alien extends GameObject{
     }
     void draw(Graphics g) {
     	
-    	g.setColor(Color.YELLOW);
-    	g.fillRect(x, y, width, height);
-
+    	g.drawImage(GamePanel.alienImg, x, y, width, height, null);
     }
     void update() {
     	super.update();
     	//collisionBox.setBounds(x, y, width, height);
-    	y+=1;
+    	y+=5;
        if(y>800){
     	   isAlive = false;
        }
